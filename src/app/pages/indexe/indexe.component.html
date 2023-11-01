@@ -1,0 +1,253 @@
+<div class="header bg-gradient-danger pb-8 ">
+  <div class="container-fluid">
+    <div class="header-body">
+      <!-- Card stats -->
+      
+    </div>
+  </div>
+</div>
+
+  <div class="container-fluid mt-3">
+    <!-- Table -->
+    <div class="row">
+      <div class="col">
+        <div class="card shadow">
+            <div class="card-header bg-white border-0">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h3 class="mb-0">Indexe</h3>
+                </div>
+                <div class="col-4">
+                <form class="navbar-search form-inline mr-3 d-none d-md-flex ml-lg-auto">
+                  <div class="form-group mb-0" >
+                    <div class="input-group input-group-alternative">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                      </div>
+                      <input class="form-control" (ngModelChange)="searchIndexe(key.value)" #key="ngModel" ngModel placeholder="Search" type="text" name="key">
+                    </div>
+                  </div>
+                </form>
+                </div>
+
+
+                <div class="col-4 text-right">
+                  <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addIndexe"><i class="ni ni-fat-add"></i>Add</button>
+                </div>
+              </div>
+            </div>
+          <div class="table-responsive" id="main-table">
+            <table class="table align-items-center table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">description</th>
+                  <th scope="col">Initial Value</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let indexe of indexes | paginate : {
+                  itemsPerPage: tableSize,
+                  currentPage: page,
+                  totalItems: count
+                };">
+                  <th scope="row">
+                    <div class="media align-items-center">
+                      {{indexe.nom}}
+                    </div>
+                  </th>
+                  <td>
+                    {{indexe.type}}
+                  </td>
+                  <td>
+
+                    {{indexe.description}}
+                    
+                  </td>
+                  <td>
+                    {{indexe.defaultvalue}}
+                  </td>
+                  <td class="text-center">
+                    <button type="button" (click)="onOpenModal(indexe,'edit')" class="btn btn-primary btn-sm" aria-label="Edit" data-toggle="modal" data-target="#editIndexeModal"><i class="ni ni-settings"></i></button>
+                    <button type="button" (click)="onOpenModal(indexe,'delete')" class="btn btn-primary btn-sm" aria-label="Remove" data-toggle="modal" data-target="#deleteIndexe"><i class="ni ni-fat-remove"></i></button>
+                 </td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="indexes?.length == 0" class="alert alert-warning alert-dismissible fade show" role="alert">
+              <span class="alert-icon"><i class="ni ni-like-2"></i></span>
+              <span class="alert-text"><strong>NO Indexes</strong> No indexes were found</span>
+          </div>
+          </div>
+          <div class="card-footer py-4">
+            <div class="row">
+              <div class="col-lg-4"></div>
+              <div class="col-lg-6">
+                <pagination-controls
+                  responsive="true" 
+                  previousLabel="Prev" 
+                  nextLabel="Next" 
+                  (pageChange)="onTableDataChange($event)">
+                </pagination-controls>
+            </div>
+            <div class="col-lg-1">
+            <select (change)="onTableSizeChange($event)" class="custom-select">
+                  <option *ngFor="let size of tableSizes" [ngValue]="size">
+                    {{ size }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+<!-- Add Modal -->
+<div class="modal fade" id="addIndexe" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Add indexe</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!--form-->
+        <form #addForm="ngForm" (ngSubmit)="onAddIndexe(addForm)">
+          <div class="pl-lg-4">
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-username">Name</label>
+                  <input type="text" ngModel  name="nom" class="form-control form-control-alternative" placeholder="name of the indexe" required>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-Description">Description</label>
+                  <input type="text" ngModel  name="description" class="form-control form-control-alternative" placeholder="Description of the indexe">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-Type">Type</label>
+                  <br>
+                  <div class="form-group">
+                    <select class="form-control" ngModel  name="type">
+                      <option>Choose the type</option>
+                      <option>String</option>
+                      <option>Number</option>
+                      <option>Date</option>
+                      <option>Boolean</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-last-name">Initial value</label>
+                  <input type="text" ngModel  name="defaultvalue" class="form-control form-control-alternative" placeholder="Initial value of the indexe">
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="modal-footer">
+            <button type="button" id="add-indexe-form" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button  type="submit" class="btn btn-primary" >Save changes</button>
+          </div>
+        </form>
+      </div>      
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editIndexeModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Edit indexe</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       
+        <form #editForm="ngForm">
+          <div class="pl-lg-4">
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-username">Name</label>
+                  <input type="text" ngModel="{{editIndexe?.nom}}"  name="nom" class="form-control form-control-alternative" placeholder="name of the indexe" required>
+                  <input type="hidden" ngModel="{{editIndexe?.idxid}}" name="idxid" class="form-control form-control-alternative">
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-Description">Description</label>
+                  <input type="text" ngModel="{{editIndexe?.description}}"  name="description" class="form-control form-control-alternative" placeholder="Description of the indexe">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-Type">Type</label>
+                  <br>
+                  <div class="form-group">
+                    <select class="form-control" ngModel="{{editIndexe?.type}}"  name="type">
+                      <option>Choose the type</option>
+                      <option>String</option>
+                      <option>Number</option>
+                      <option>Date</option>
+                      <option>Boolean</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-last-name">Initial value</label>
+                  <input type="text" ngModel="{{editIndexe?.defaultvalue}}"  name="defaultvalue" class="form-control form-control-alternative" placeholder="Initial value of the indexe">
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="modal-footer">
+            <button type="button" id="edit-indexe-form" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button  (click)="onUpdateIndexe(editForm.value)" class="btn btn-primary" >Save changes</button>
+          </div>
+        </form>
+      </div>      
+    </div>
+  </div>
+</div>
+<!-- delete Modal -->
+<div class="modal fade" id="deleteIndexe" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Delete indexe</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        are you sure you want to delete indexe {{deleteIndexe?.nom}}
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="delete-indexe-form" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button (click)="onDeleteIndexe(deleteIndexe.idxid)" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

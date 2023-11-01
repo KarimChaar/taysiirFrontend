@@ -1,0 +1,298 @@
+<div class="header bg-gradient-danger pb-8 ">
+    <div class="container-fluid">
+      <div class="header-body">
+        <!-- Card stats -->
+        
+      </div>
+    </div>
+  </div>
+<div class="container-fluid mt-3">
+    <!-- Table -->
+    <div class="row">
+      <div class="col">
+        <div class="card shadow">
+            <div class="card-header bg-white border-0">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h3 class="mb-0">Groups</h3>
+                </div>
+                <div class="col-4">
+                <form class="navbar-search form-inline mr-3 d-none d-md-flex ml-lg-auto">
+                  <div class="form-group mb-0" >
+                    <div class="input-group input-group-alternative">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                      </div>
+                      <input class="form-control" (ngModelChange)="searchGroup(key.value)" #key="ngModel" ngModel placeholder="Search" type="text" name="key">
+                    </div>
+                  </div>
+                </form>
+                </div>
+
+
+                <div class="col-4 text-right">
+                  <button type="button" (click)="onDisplay()" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addGroupe"><i class="ni ni-fat-add"></i>Add</button>
+                </div>
+              </div>
+            </div>
+          <div class="table-responsive" id="main-table">
+            <table class="table align-items-center table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Code</th>
+                  <th scope="col">Description</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let groupe of groupes| paginate : {
+                    itemsPerPage: tableSize,
+                    currentPage: page,
+                    totalItems: count
+                  };">
+                  <th scope="row">
+                    <div class="media align-items-center">
+                      {{groupe.code}}
+                    </div>
+                  </th>
+                  <td>
+                    {{groupe.description}}
+                  </td>
+                  <td class="text-center">
+                    <button type="button" (click)="onOpenModal(groupe,'edit')" class="btn btn-primary btn-sm" aria-label="Edit" data-toggle="modal" data-target="#editGroupe"><i class="ni ni-settings"></i></button>
+                    <button type="button" (click)="onOpenModal(groupe,'delete')" class="btn btn-primary btn-sm" aria-label="Remove" data-toggle="modal" data-target="#deleteGroupe"><i class="ni ni-fat-remove"></i></button>
+                 </td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="groupes?.length == 0" class="alert alert-warning alert-dismissible fade show" role="alert">
+              <span class="alert-icon"><i class="ni ni-like-2"></i></span>
+              <span class="alert-text"><strong>NO GROUP</strong> No group were found</span>
+          </div>
+          </div>
+          <div class="card-footer py-4">
+            <div class="row">
+                <div class="col-lg-4"></div>
+                <div class="col-lg-6">
+                  <pagination-controls
+                    responsive="true" 
+                    previousLabel="Prev" 
+                    nextLabel="Next" 
+                    (pageChange)="onTableDataChange($event)">
+                  </pagination-controls>
+              </div>
+              <div class="col-lg-1">
+              <select (change)="onTableSizeChange($event)" class="custom-select">
+                    <option *ngFor="let size of tableSizes" [ngValue]="size">
+                      {{ size }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<!--Add Modal Groupe-->
+<div class="modal fade" id="addGroupe" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Add Groupe</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!--form-->
+          <form name="mainForm" (ngSubmit)="addGroupePersonne()" >
+            <form #addForm="ngForm" id="groupeForm" (ngSubmit)="addGroupe(addForm)">
+              <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-username">Name</label>
+                    <input type="text" ngModel  #code name="code" class="form-control form-control-alternative" placeholder="name of the groupe" >
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-Description">Description</label>
+                    <input type="text" ngModel #description name="description" class="form-control form-control-alternative" placeholder="Description of the groupe">
+                  </div>
+                </div>
+              </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-8"></div>
+                <div class="text-right">
+                  <button  type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+              </div>
+            </form>
+                <div id="personnePart" style="display: none;">
+                <div class="pl-lg-4" >
+                    <div class="row">
+                <div class="table-responsive" id="main-table">
+                    <table class="table align-items-center table-flush">
+                      <thead class="thead-light">
+                        <tr>
+                          <th scope="col"></th>
+                          <th scope="col">First name</th>
+                          <th scope="col">Last name</th>
+                          
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let personne of personnes">
+                          <td>
+                                <input [(ngModel)]="personne.isChecked" type="checkbox" (change)="changeSelection()" >
+                          </td>
+                          <th scope="row">
+                            <div class="media align-items-center">
+                              {{personne.nom}}
+                            </div>
+                          </th>
+                          <td>
+                            {{personne.prenom}}
+                          </td>
+                         
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div *ngIf="groupes?.length == 0" class="alert alert-warning alert-dismissible fade show" role="alert">
+                      <span class="alert-icon"><i class="ni ni-like-2"></i></span>
+                      <span class="alert-text"><strong>NO GROUP</strong> No group were found</span>
+                  </div>
+                  </div>
+                    </div>          
+                    <div class="modal-footer">
+                <button type="button" id="add-groupe-form" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button  type="submit" (click)="code.value=''; description.value='';" class="btn btn-primary" >Save changes</button>
+                    </div>
+                </div>
+                </div>
+
+          </form>
+        </div>      
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <!--Delete Groupe Modal-->
+  <div class="modal fade" id="deleteGroupe" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Delete Groupe</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          are you sure you want to delete this group {{deletegroupe?.code}}
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="delete-groupe-form" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button (click)="deleteGroupe(deletegroupe.idgrp)" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Edit Group Modal-->
+
+  <div class="modal fade" id="editGroupe" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Edit Groupe</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="nav-wrapper">
+    <ul class="nav nav-pills nav-fill flex-column flex-md-row" id="tabs-icons-text" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link mb-sm-4 mb-md-0 active" id="tabs-icons-text-1-tab" data-toggle="tab" href="#tabs-icons-text-1" (click)="this.personneList=[];"role="tab" aria-controls="tabs-icons-text-1" aria-selected="true"><i class="ni ni-cloud-upload-96 mr-2"></i>General data </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link mb-sm-4 mb-md-0" id="tabs-icons-text-2-tab" data-toggle="tab" href="#tabs-icons-text-2" role="tab" aria-controls="tabs-icons-text-2" aria-selected="false" (click)="getMatriculeFromGroupe()"><i class="ni ni-bell-55 mr-2"></i>User list</a>
+        </li>
+    </ul>
+</div>
+<div class="card shadow">
+    <div class="card-body">
+      <form #editForm="ngForm" (ngSubmit)="updateGroupe(addForm)">  
+      <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="tabs-icons-text-1" role="tabpanel" aria-labelledby="tabs-icons-text-1-tab">             
+                <div class="pl-lg-4">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input-username">Name</label>
+                      <input type="text" ngModel="{{editgroupe?.code}}" name="code" class="form-control form-control-alternative" placeholder="name of the groupe" >
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input-Description">Description</label>
+                      <input type="text" ngModel="{{editgroupe?.description}}"  name="description" class="form-control form-control-alternative" placeholder="Description of the groupe">
+                    </div>
+                  </div>
+                </div>
+                </div>
+
+
+            </div>
+            <div class="tab-pane fade" id="tabs-icons-text-2" role="tabpanel" aria-labelledby="tabs-icons-text-2-tab">
+              <div class="table-responsive" id="main-table">
+                <table class="table align-items-center table-flush">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">First name</th>
+                      <th scope="col">Last name</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let personne of personneList">
+                      <th scope="row">
+                        <div class="media align-items-center">
+                          {{personne.nom}}
+                        </div>
+                      </th>
+                      <td>
+                        {{personne.prenom}}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+        </div>
+        <div class="row">
+          <div class="col-lg-8"></div>
+          <div class="text-right">
+            <button  type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+</div>
+
+
+        </div>      
+      </div>
+    </div>
+  </div>
+
